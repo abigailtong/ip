@@ -6,21 +6,49 @@ public class Miffy {
                 + "|  \\/  |_ _|  ___|  ___| \\ \\ / /\n"
                 + "| |\\/| || || |_  | |_   \\ \\ V / \n"
                 + "| |  | || ||  _| |  _|   | | |  \n"
-                + "|_|  |_|___|_|   |_|     |_| |_| \n";
+                + "|_|  |_|___|_|   |_|     |_|_| \n";
         System.out.println("Hello from\n" + logo);
         System.out.println(" What can I do for you?");
         System.out.println("____________________________________________________________");
 
-        while(true) {
-            String input = in.nextLine();
+        Scanner scanner = new Scanner(System.in);
+        handleUserInput(scanner);
+    }
 
-            if(input.equals("bye")) {
+    public static void handleUserInput(Scanner scanner) {
+        String[] list = new String[100];
+        int numItems = 0;
+
+        while (true) {
+            String input = scanner.nextLine().trim().toLowerCase();
+
+            if (input.equalsIgnoreCase("list")) {
+                printList(list, numItems);
+            } else if (input.equalsIgnoreCase("bye")) {
                 System.out.println("Bye. Hope to see you again soon!");
-                System.out.println("____________________________________________________________");
                 break;
+            } else {
+                printInput(input);
+                list[numItems] = input;
+                numItems++;
             }
-            System.out.println(input);
-            System.out.println("____________________________________________________________");
         }
+        scanner.close();
+    }
+
+    public static void printInput(String input) {
+        System.out.print("added: ");
+        System.out.println(input);
+        System.out.println("____________________________________________________________");
+    }
+
+    public static void printList(String[] list, int numItems) {
+        for (int i = 0; i < numItems; i++) {
+            int number = i + 1;
+            String user = list[i];
+
+            System.out.println("     " + number + ". " + user);
+        }
+        System.out.println("____________________________________________________________");
     }
 }
