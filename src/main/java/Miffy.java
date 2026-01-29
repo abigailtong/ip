@@ -1,14 +1,13 @@
 import java.util.Scanner;
 public class Miffy {
     public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
         String logo = " __  __ ___ _____ _____ __   __\n"
                 + "|  \\/  |_ _|  ___|  ___| \\ \\ / /\n"
                 + "| |\\/| || || |_  | |_   \\ \\ V / \n"
                 + "| |  | || ||  _| |  _|   | | |  \n"
                 + "|_|  |_|___|_|   |_|     |_|_| \n";
         System.out.println("Hello from\n" + logo);
-        System.out.println(" What can I do for you?");
+        System.out.println("What are we doing now?");
         System.out.println("____________________________________________________________");
 
         Scanner scanner = new Scanner(System.in);
@@ -16,39 +15,64 @@ public class Miffy {
     }
 
     public static void handleUserInput(Scanner scanner) {
-        String[] list = new String[100];
-        int numItems = 0;
+        Task[] tasks = new Task[100];
+        int taskCount = 0;
 
         while (true) {
             String input = scanner.nextLine().trim().toLowerCase();
 
             if (input.equalsIgnoreCase("list")) {
-                printList(list, numItems);
+                System.out.println("We are checking:");
+                printList(tasks, taskCount);
             } else if (input.equalsIgnoreCase("bye")) {
-                System.out.println("Bye. Hope to see you again soon!");
+                System.out.println("As always sir, a great pleasure watching you work!");
                 break;
+            } else if (input.startsWith("mark")) {
+                int taskIndex = parseTaskIndex(input, 5);
+                tasks[taskIndex].markAsDone();
+                printMarkResult(tasks[taskIndex], true);
+            }  else if (input.startsWith("unmark")) {
+                int taskIndex = parseTaskIndex(input, 7);
+                tasks[taskIndex].markAsNotDone();
+                printMarkResult(tasks[taskIndex], false);
             } else {
                 printInput(input);
-                list[numItems] = input;
-                numItems++;
+                tasks[taskCount] = new Task(input);
+                taskCount++;
             }
         }
         scanner.close();
     }
 
+    private static int parseTaskIndex(String input, int commandLength) {
+        return Integer.parseInt(input.substring(commandLength)) - 1;
+    }
+
     public static void printInput(String input) {
-        System.out.print("added: ");
+        System.out.print("Let's add that to the words of wisdom: ");
         System.out.println(input);
         System.out.println("____________________________________________________________");
     }
 
-    public static void printList(String[] list, int numItems) {
-        for (int i = 0; i < numItems; i++) {
+    public static void printList(Task[] tasks, int taskCount) {
+        for (int i = 0; i < taskCount; i++) {
             int number = i + 1;
-            String user = list[i];
+            Task task = tasks[i];
+            String status = task.isDone() ? "[X] " : "[ ] ";
 
-            System.out.println("     " + number + ". " + user);
+            System.out.println("     " + (i+1) + ". " + status + task.getDescription());
         }
+        System.out.println("____________________________________________________________");
+    }
+
+    private static void printMarkResult(Task task, boolean isDone) {
+        if (isDone) {
+            System.out.println("Congratulations on the task, it was such a success:");
+        } else {
+            System.out.println("Retired the task:");
+        }
+        String status = task.isDone() ? "[X] " : "[ ] ";
+        System.out.println("  " + status + task.getDescription());
         System.out.println("____________________________________________________________");
     }
 }
