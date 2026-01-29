@@ -58,7 +58,11 @@ public class Miffy {
         for (int i = 0; i < taskCount; i++) {
             int number = i + 1;
             Task task = tasks[i];
-            String status = task.isDone() ? "[X] " : "[ ] ";
+
+            String status = "[ ] ";
+            if (task.isDone()) {
+                status = "[X] ";
+            }
 
             System.out.println("     " + (i+1) + ". " + status + task.getDescription());
         }
@@ -71,7 +75,12 @@ public class Miffy {
         } else {
             System.out.println("Retired the task:");
         }
-        String status = task.isDone() ? "[X] " : "[ ] ";
+
+        String status = "[ ] ";
+        if (task.isDone()) {
+            status = "[X] ";
+        }
+
         System.out.println("  " + status + task.getDescription());
         System.out.println("____________________________________________________________");
     }
