@@ -22,4 +22,13 @@ public class Task {
     public void markAsNotDone() {
         isDone = false;
     }
+
+    public String getStatus() {
+        return isDone ? "[X]" : "[ ]";
+    }
+
+    @Override
+    public String toString() {
+        return getStatus() + " " + description;
+    }
 }

@@ -20,51 +20,79 @@ public class Miffy {
 
         while (true) {
             String input = scanner.nextLine().trim().toLowerCase();
+            String command = input.split(" ")[0];
 
-            if (input.equalsIgnoreCase("list")) {
-                System.out.println("We are checking:");
-                printList(tasks, taskCount);
-            } else if (input.equalsIgnoreCase("bye")) {
-                System.out.println("As always sir, a great pleasure watching you work!");
-                break;
-            } else if (input.startsWith("mark")) {
-                int taskIndex = parseTaskIndex(input, 5);
-                tasks[taskIndex].markAsDone();
-                printMarkResult(tasks[taskIndex], true);
-            }  else if (input.startsWith("unmark")) {
-                int taskIndex = parseTaskIndex(input, 7);
-                tasks[taskIndex].markAsNotDone();
-                printMarkResult(tasks[taskIndex], false);
-            } else {
-                printInput(input);
-                tasks[taskCount] = new Task(input);
-                taskCount++;
+            switch(command) {
+                case "list": {
+                    System.out.println("We are checking:");
+                    printList(tasks, taskCount);
+                    break;
+                }
+
+                case "bye": {
+                    System.out.println("As always sir, a great pleasure watching you work!");
+                    return;
+                }
+
+                case "mark": {
+                    int taskIndex = parseTaskIndex(input, 5);
+                    tasks[taskIndex].markAsDone();
+                    printMarkResult(tasks[taskIndex], true);
+                    break;
+                }
+
+                case "unmark": {
+                    int taskIndex = parseTaskIndex(input, 7);
+                    tasks[taskIndex].markAsNotDone();
+                    printMarkResult(tasks[taskIndex], false);
+                    break;
+                }
+
+                case "todo": {
+                    String description = input.substring(5);
+                    tasks[taskCount] = new Todo(description);
+                    taskCount++;
+                    printInput(tasks[taskCount - 1], taskCount);
+                    break;
+                }
+
+                case "deadline": {
+                    String[] parts = input.substring(9).split("/by");
+                    String description = parts[0].trim();
+                    String by = parts[1].trim();
+                    tasks[taskCount++] = new Deadline(description, by);
+                    printInput(tasks[taskCount - 1], taskCount);
+                    break;
+                }
+
+                case "event": {
+                    String[] parts = input.substring(6).split("/from|/to");
+                    String description = parts[0].trim();
+                    String from = parts[1].trim();
+                    String to = parts[2].trim();
+                    tasks[taskCount++] = new Event(description, from, to);
+                    printInput(tasks[taskCount - 1], taskCount);
+                    break;
+                }
+
             }
         }
-        scanner.close();
     }
 
     private static int parseTaskIndex(String input, int commandLength) {
         return Integer.parseInt(input.substring(commandLength)) - 1;
     }
 
-    public static void printInput(String input) {
-        System.out.print("Let's add that to the words of wisdom: ");
-        System.out.println(input);
+    public static void printInput(Task task, int taskCount) {
+        System.out.println("Let's add that to the words of wisdom:");
+        System.out.println(" " + task);
+        System.out.println("Now you have " + taskCount + " tasks in the list.");
         System.out.println("____________________________________________________________");
     }
 
     public static void printList(Task[] tasks, int taskCount) {
         for (int i = 0; i < taskCount; i++) {
-            int number = i + 1;
-            Task task = tasks[i];
-
-            String status = "[ ] ";
-            if (task.isDone()) {
-                status = "[X] ";
-            }
-
-            System.out.println("     " + (i+1) + ". " + status + task.getDescription());
+            System.out.println(" " + (i + 1) + "." + tasks[i]);
         }
         System.out.println("____________________________________________________________");
     }
@@ -76,12 +104,7 @@ public class Miffy {
             System.out.println("Retired the task:");
         }
 
-        String status = "[ ] ";
-        if (task.isDone()) {
-            status = "[X] ";
-        }
-
-        System.out.println("  " + status + task.getDescription());
+        System.out.println(" " + task);
         System.out.println("____________________________________________________________");
     }
 }
