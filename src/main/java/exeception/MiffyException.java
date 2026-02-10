@@ -1,3 +1,5 @@
+package exeception;
+
 /**
  * Exception handler for invalid input from the user.
  */
