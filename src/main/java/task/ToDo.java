@@ -1,11 +1,13 @@
+package task;
+
 /**
- * Represents a ToDo without a specific deadline or time.
- * Extends the Task class by providing a ToDo type.
+ * Represents a task.ToDo without a specific deadline or time.
+ * Extends the task.Task class by providing a task.ToDo type.
  */
 public class ToDo extends Task {
 
     /**
-     * Constructs a ToDo task with the specified description.
+     * Constructs a task.ToDo task with the specified description.
      *
      * @param description Description of the todo task.
      */

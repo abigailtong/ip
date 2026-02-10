@@ -1,15 +1,22 @@
+package ui;
+
 import java.util.Scanner;
 
+import task.Task;
+import task.Deadline;
+import task.ToDo;
+import task.Event;
+import reader.MiffyReader;
+
 /**
- * Main class for the Miffy task management program.
- * Handles user input and manages a list of ToDos, Event & Deadline.
+ * Main class for the ui.Miffy task management program.
+ * Handles user input and manages a list of ToDos, task.Event & task.Deadline.
  */
 public class Miffy {
 
     /**
      * The main entry point of the program.
      * Prints the logo and starts handling user input.
-     *
      */
     public static void main(String[] args) {
         String logo = " __  __ ___ _____ _____ __   __\n"
@@ -48,53 +55,52 @@ public class Miffy {
             String command = commandArguments[0];
 
             switch (command) {
+            case "list":
+                System.out.println("We are checking:");
+                printList(tasks, taskCount);
+                break;
 
-                case "list":
-                    System.out.println("We are checking:");
-                    printList(tasks, taskCount);
-                    break;
+            case "bye":
+                System.out.println("As always sir, a great pleasure watching you work!");
+                return;
 
-                case "bye":
-                    System.out.println("As always sir, a great pleasure watching you work!");
-                    return;
+            case "mark":
+                taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                tasks[taskIndex].markAsDone();
+                printMarkResult(tasks[taskIndex], true);
+                break;
 
-                case "mark":
-                    taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                    tasks[taskIndex].markAsDone();
-                    printMarkResult(tasks[taskIndex], true);
-                    break;
+            case "unmark":
+                taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                tasks[taskIndex].markAsNotDone();
+                printMarkResult(tasks[taskIndex], false);
+                break;
 
-                case "unmark":
-                    taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                    tasks[taskIndex].markAsNotDone();
-                    printMarkResult(tasks[taskIndex], false);
-                    break;
+            case "todo":
+                taskDescription = commandArguments[1];
+                tasks[taskCount] = new ToDo(taskDescription);
+                printInput(tasks[taskCount], taskCount + 1);
+                taskCount++;
+                break;
 
-                case "todo":
-                    taskDescription = commandArguments[1];
-                    tasks[taskCount] = new ToDo(taskDescription);
-                    printInput(tasks[taskCount], taskCount + 1);
-                    taskCount++;
-                    break;
+            case "deadline":
+                parts = commandArguments[1].split(" /by ");
+                taskDescription = parts[0].trim();
+                String by = parts[1].trim();
+                tasks[taskCount] = new Deadline(taskDescription, by);
+                printInput(tasks[taskCount], taskCount + 1);
+                taskCount++;
+                break;
 
-                case "deadline":
-                    parts = commandArguments[1].split(" /by ");
-                    taskDescription = parts[0].trim();
-                    String by = parts[1].trim();
-                    tasks[taskCount] = new Deadline(taskDescription, by);
-                    printInput(tasks[taskCount], taskCount + 1);
-                    taskCount++;
-                    break;
-
-                case "event":
-                    parts = commandArguments[1].split(" /from | /to ");
-                    taskDescription = parts[0].trim();
-                    String from = parts[1].trim();
-                    String to = parts[2].trim();
-                    tasks[taskCount] = new Event(taskDescription, from, to);
-                    printInput(tasks[taskCount], taskCount + 1);
-                    taskCount++;
-                    break;
+            case "event":
+                parts = commandArguments[1].split(" /from | /to ");
+                taskDescription = parts[0].trim();
+                String from = parts[1].trim();
+                String to = parts[2].trim();
+                tasks[taskCount] = new Event(taskDescription, from, to);
+                printInput(tasks[taskCount], taskCount + 1);
+                taskCount++;
+                break;
             }
         }
     }
@@ -103,7 +109,7 @@ public class Miffy {
      * Parses the task index from user input for
      * commands.
      *
-     * @param input The user input string.
+     * @param input         The user input string.
      * @param commandLength The length of the command prefix.
      * @return The zero-based index of the task.
      */
@@ -114,7 +120,7 @@ public class Miffy {
     /**
      * Prints the added task and the updated task count.
      *
-     * @param task The task that was added.
+     * @param task      The task that was added.
      * @param taskCount The current number of tasks.
      */
     public static void printInput(Task task, int taskCount) {
@@ -127,7 +133,7 @@ public class Miffy {
     /**
      * Prints the list of all tasks.
      *
-     * @param tasks Array of tasks.
+     * @param tasks     Array of tasks.
      * @param taskCount Number of tasks in the list.
      */
     public static void printList(Task[] tasks, int taskCount) {
@@ -140,7 +146,7 @@ public class Miffy {
     /**
      * Prints the result of marking or unmarking a task.
      *
-     * @param task The task being updated.
+     * @param task   The task being updated.
      * @param isDone True if marking as done, false if unmarking.
      */
     private static void printMarkResult(Task task, boolean isDone) {

@@ -1,6 +1,8 @@
+package task;
+
 /**
  * Represents a task with a deadline.
- * Extends the Task class by adding a due date/time.
+ * Extends the task.Task class by adding a due date/time.
  */
 public class Deadline extends Task {
 

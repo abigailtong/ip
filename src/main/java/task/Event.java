@@ -1,6 +1,8 @@
+package task;
+
 /**
- * Represents an Event that occurs within a specific time period.
- * Extends the Task class by adding a start and end time.
+ * Represents an task.Event that occurs within a specific time period.
+ * Extends the task.Task class by adding a start and end time.
  */
 public class Event extends Task {
 
