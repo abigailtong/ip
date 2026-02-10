@@ -61,7 +61,7 @@ public class MiffyReader {
 
             // Range validation: 0 < index < taskCount - 1
             if ((markIndex < 0) || (markIndex > taskCount - 1)) {
-                throw new MiffyException("task.Task number is out of valid range!");
+                throw new MiffyException("Task number is out of valid range!");
             }
 
             return commandArguments;
@@ -80,7 +80,7 @@ public class MiffyReader {
 
             // Range validation: 0 < index < taskCount - 1
             if ((unmarkIndex < 0) || (unmarkIndex > taskCount - 1)) {
-                throw new MiffyException("task.Task number is out of valid range!");
+                throw new MiffyException("Task number is out of valid range!");
             }
 
             return commandArguments;
