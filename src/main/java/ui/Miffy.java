@@ -105,17 +105,6 @@ public class Miffy {
         }
     }
 
-    /**
-     * Parses the task index from user input for
-     * commands.
-     *
-     * @param input         The user input string.
-     * @param commandLength The length of the command prefix.
-     * @return The zero-based index of the task.
-     */
-    private static int parseTaskIndex(String input, int commandLength) {
-        return Integer.parseInt(input.substring(commandLength)) - 1;
-    }
 
     /**
      * Prints the added task and the updated task count.

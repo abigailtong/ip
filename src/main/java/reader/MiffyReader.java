@@ -4,7 +4,7 @@ import exeception.MiffyException;
 
 /**
  * Handles parsing and validation of user input.
- * Converts raw input into command arguments usable by ui.Miffy.
+ * Converts raw input into command arguments usable by Miffy.
  */
 public class MiffyReader {
 
@@ -32,13 +32,13 @@ public class MiffyReader {
 
         case "bye":
             if (length != 1) {
-                throw new MiffyException("ui.Miffy thinks you should type: bye");
+                throw new MiffyException("Miffy thinks you should type: bye");
             }
             return commandArguments;
 
         case "list":
             if (length != 1) {
-                throw new MiffyException("ui.Miffy thinks you should type: list");
+                throw new MiffyException("Miffy thinks you should type: list");
             }
 
             if (taskCount == 0) {
@@ -90,7 +90,7 @@ public class MiffyReader {
             isInvalid = (length < 2) || commandArguments[1].trim().isEmpty();
 
             if (isInvalid) {
-                throw new MiffyException("ui.Miffy thinks you should type: todo <description>");
+                throw new MiffyException("Miffy thinks you should type: todo <description>");
             }
 
             return commandArguments;
@@ -102,7 +102,7 @@ public class MiffyReader {
 
             if (isInvalid) {
                 throw new MiffyException(
-                        "ui.Miffy thinks you should type: deadline <description> /by <time>");
+                        "Miffy thinks you should type: deadline <description> /by <time>");
             }
 
             return commandArguments;
@@ -115,13 +115,13 @@ public class MiffyReader {
 
             if (isInvalid) {
                 throw new MiffyException(
-                        "ui.Miffy thinks you should type: event <description> /from <time> /to <time>");
+                        "Miffy thinks you should type: event <description> /from <time> /to <time>");
             }
 
             return commandArguments;
 
         default:
-            throw new MiffyException("ui.Miffy is too stunned to speak.");
+            throw new MiffyException("Miffy is too stunned to speak.");
         }
     }
 }
