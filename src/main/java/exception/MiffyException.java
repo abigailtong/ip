@@ -1,4 +1,4 @@
-package exeception;
+package exception;
 
 /**
  * Exception handler for invalid input from the user.

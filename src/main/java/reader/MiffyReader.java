@@ -1,6 +1,9 @@
 package reader;
 
-import exeception.MiffyException;
+import exception.MiffyException;
+import task.Task;
+
+import java.util.ArrayList;
 
 /**
  * Handles parsing and validation of user input.
@@ -16,7 +19,7 @@ public class MiffyReader {
      * @return String array of command and arguments.
      * @throws MiffyException if command is invalid.
      */
-    public static String[] readInput(String input, int taskCount) throws MiffyException {
+    public static String[] readInput(String input, ArrayList<Task> tasks) throws MiffyException {
 
         if (input == null || input.trim().isEmpty()) {
             throw new MiffyException("I am miffed that you did not say anything!");
@@ -24,6 +27,7 @@ public class MiffyReader {
 
         String[] commandArguments = input.trim().toLowerCase().split(" ", 2);
         String command = commandArguments[0];
+        int taskCount = tasks.size();
 
         int length = commandArguments.length;
         boolean isInvalid;
@@ -120,7 +124,26 @@ public class MiffyReader {
 
             return commandArguments;
 
-        default:
+            case "delete":
+                if (length < 2 || commandArguments[1].trim().isEmpty()) {
+                    throw new MiffyException("You did not tell me the task number!");
+                }
+
+                int deleteIndex;
+                try {
+                    deleteIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                } catch (NumberFormatException e) {
+                    throw new MiffyException("That is not a valid task number!");
+                }
+
+                // Range validation: 0 < index < taskCount - 1
+                if ((deleteIndex < 0) || (deleteIndex > taskCount - 1)) {
+                    throw new MiffyException("Task number is out of valid range!");
+                }
+
+                return commandArguments;
+
+            default:
             throw new MiffyException("Miffy is too stunned to speak.");
         }
     }
