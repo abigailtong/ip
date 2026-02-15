@@ -1,7 +1,9 @@
 package ui;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
+import saving.SaveMiffy;
 import task.Task;
 import task.Deadline;
 import task.ToDo;
@@ -33,12 +35,12 @@ public class Miffy {
     }
 
     public static void handleUserInput(Scanner scanner) {
-
-        Task[] tasks = new Task[100];
+        SaveMiffy miffySaver = new SaveMiffy();
+        ArrayList<Task> tasks = miffySaver.loadFromFile();
         int taskIndex;
+        Task task;
         String taskDescription;
         String[] parts;
-        int taskCount = 0;
 
         while (true) {
 
@@ -46,7 +48,7 @@ public class Miffy {
 
             String[] commandArguments;
             try {
-                commandArguments = MiffyReader.readInput(input, taskCount);
+                commandArguments = MiffyReader.readInput(input, tasks);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 continue;
@@ -55,52 +57,64 @@ public class Miffy {
             String command = commandArguments[0];
 
             switch (command) {
-            case "list":
-                System.out.println("We are checking:");
-                printList(tasks, taskCount);
-                break;
+                case "list":
+                    System.out.println("We are checking:");
+                    printList(tasks);
+                    break;
 
-            case "bye":
-                System.out.println("As always sir, a great pleasure watching you work!");
-                return;
+                case "bye":
+                    System.out.println("As always sir, a great pleasure watching you work!");
+                    miffySaver.saveToFile(tasks);
+                    return;
 
-            case "mark":
-                taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                tasks[taskIndex].markAsDone();
-                printMarkResult(tasks[taskIndex], true);
-                break;
+                case "mark":
+                    taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                    task = tasks.get(taskIndex);
+                    task.markAsDone();
+                    printMarkResult(task, true);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
-            case "unmark":
-                taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                tasks[taskIndex].markAsNotDone();
-                printMarkResult(tasks[taskIndex], false);
-                break;
+                case "unmark":
+                    taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                    task = tasks.get(taskIndex);
+                    task.markAsDone();
+                    printMarkResult(task, false);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
-            case "todo":
-                taskDescription = commandArguments[1];
-                tasks[taskCount] = new ToDo(taskDescription);
-                printInput(tasks[taskCount], taskCount + 1);
-                taskCount++;
-                break;
+                case "todo":
+                    taskDescription = commandArguments[1];
+                    tasks.add(new ToDo(taskDescription));
+                    printInput(tasks);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
-            case "deadline":
-                parts = commandArguments[1].split(" /by ");
-                taskDescription = parts[0].trim();
-                String by = parts[1].trim();
-                tasks[taskCount] = new Deadline(taskDescription, by);
-                printInput(tasks[taskCount], taskCount + 1);
-                taskCount++;
-                break;
+                case "deadline":
+                    parts = commandArguments[1].split(" /by ");
+                    taskDescription = parts[0].trim();
+                    String by = parts[1].trim();
+                    tasks.add(new Deadline(taskDescription, by));
+                    printInput(tasks);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
-            case "event":
-                parts = commandArguments[1].split(" /from | /to ");
-                taskDescription = parts[0].trim();
-                String from = parts[1].trim();
-                String to = parts[2].trim();
-                tasks[taskCount] = new Event(taskDescription, from, to);
-                printInput(tasks[taskCount], taskCount + 1);
-                taskCount++;
-                break;
+                case "event":
+                    parts = commandArguments[1].split(" /from | /to ");
+                    taskDescription = parts[0].trim();
+                    String from = parts[1].trim();
+                    String to = parts[2].trim();
+                    tasks.add(new Event(taskDescription, from, to));
+                    printInput(tasks);
+                    miffySaver.saveToFile(tasks);
+                    break;
+
+                case "delete":
+                    taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                    deleteTask(tasks, taskIndex);
+                    miffySaver.saveToFile(tasks);
+                    break;
+
             }
         }
     }
@@ -109,13 +123,13 @@ public class Miffy {
     /**
      * Prints the added task and the updated task count.
      *
-     * @param task      The task that was added.
-     * @param taskCount The current number of tasks.
+     * @param tasks      The list of tasks.
      */
-    public static void printInput(Task task, int taskCount) {
+    public static void printInput(ArrayList<Task> tasks) {
+        int topIndex = tasks.size() - 1;
         System.out.println("Let's add that to the words of wisdom:");
-        System.out.println(" " + task);
-        System.out.println("Now you have " + taskCount + " tasks in the list.");
+        System.out.println(" " + tasks.get(topIndex));
+        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
         System.out.println("____________________________________________________________");
     }
 
@@ -123,11 +137,10 @@ public class Miffy {
      * Prints the list of all tasks.
      *
      * @param tasks     Array of tasks.
-     * @param taskCount Number of tasks in the list.
      */
-    public static void printList(Task[] tasks, int taskCount) {
-        for (int i = 0; i < taskCount; i++) {
-            System.out.println(" " + (i + 1) + "." + tasks[i]);
+    public static void printList(ArrayList<Task> tasks) {
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println(" " + (i + 1) + "." + tasks.get(i));
         }
         System.out.println("____________________________________________________________");
     }
@@ -148,4 +161,20 @@ public class Miffy {
         System.out.println(" " + task);
         System.out.println("____________________________________________________________");
     }
+
+
+    /**
+     * Deletes the task with the given index.
+     *
+     * @param tasks      The list of tasks.
+     * @param index      The index of the task to delete.
+     */
+    public static void deleteTask(ArrayList<Task> tasks, int index) {
+        System.out.println("Let's remove this from the words of wisdom:");
+        System.out.println(" " + tasks.get(index));
+        tasks.remove(index);
+        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+        System.out.println("____________________________________________________________");
+    }
+
 }

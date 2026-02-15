@@ -70,4 +70,8 @@ public class Task {
     public String toString() {
         return getStatus() + " " + description;
     }
+
+    public String toSavingString() {
+        return isDone + " | " + description;
+    }
 }
