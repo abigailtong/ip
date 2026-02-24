@@ -71,6 +71,12 @@ public class Parser {
                 }
                 return commandArguments;
 
+            case "find":
+                if (length < 2 || commandArguments[1].trim().isEmpty()) {
+                    throw new MiffyException("Miffy thinks you should type: find <keyword>");
+                }
+                return commandArguments;
+
             default:
                 throw new MiffyException("Miffy is too stunned to speak.");
         }
