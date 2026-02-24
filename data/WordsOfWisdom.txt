@@ -2,3 +2,4 @@ T | false | eat
 T | true | eat
 T | false | eat
 D | true | eat all | 9pm
+T | false | eat all

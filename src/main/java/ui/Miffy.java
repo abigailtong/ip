@@ -1,118 +1,124 @@
 package ui;
 
-import exception.MiffyException;
-import reader.Parser;
 import saving.Storage;
+import task.Task;
+import task.ToDo;
 import task.Deadline;
 import task.Event;
 import task.TaskList;
-import task.ToDo;
+import reader.Parser;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
- * Main class for the Miffy task management program.
- * Handles user input and manages a list of tasks.
+ * Main Miffy application that handles user input and task management.
  */
 public class Miffy {
 
-    public static void main(String[] args) {
-        String logo = " __  __ ___ _____ _____ __   __\n"
-                + "|  \\/  |_ _|  ___|  ___| \\ \\ / /\n"
-                + "| |\\/| || || |_  | |_   \\ \\ V / \n"
-                + "| |  | || ||  _| |  _|   | | |  \n"
-                + "|_|  |_|___|_|   |_|     |_|_| \n";
+    private final Ui ui;
+    private final Scanner scanner;
+    private final Storage storage;
+    private final TaskList tasks;
 
-        System.out.println("Hello from\n" + logo);
-        System.out.println("What are we doing now?");
-        System.out.println("____________________________________________________________");
+    public Miffy() {
+        this.ui = new Ui();
+        this.scanner = new Scanner(System.in);
+        this.storage = new Storage();
+        this.tasks = storage.loadFromFile();
 
-        Scanner scanner = new Scanner(System.in);
-        handleUserInput(scanner);
+        ui.showWelcome();
     }
 
-    public static void handleUserInput(Scanner scanner) {
-        Storage storage = new Storage();
-        TaskList taskList = storage.loadFromFile();
+    public void run() {
+        boolean isExit = false;
 
-        while (true) {
-            String input = scanner.nextLine().trim();
-            if (input.isEmpty()) {
-                System.out.println("I am miffed that you did not say anything!");
-                continue;
-            }
-
-            String[] commandArguments;
+        while (!isExit) {
             try {
-                commandArguments = Parser.readInput(input, taskList);
-            } catch (MiffyException e) {
-                System.out.println(e.getMessage());
-                continue;
-            }
+                ui.showPrompt();
+                String input = scanner.nextLine();
 
-            String command = commandArguments[0];
+                // Pass the task list as a List<Task> to Parser
+                String[] commandArguments = Parser.readInput(input, tasks);
+                String command = commandArguments[0];
 
-            try {
                 switch (command) {
                     case "list":
-                        taskList.printAllTasks();
+                        ui.showTaskList(tasks); // Pass TaskList directly
                         break;
 
                     case "bye":
-                        System.out.println("As always sir, a great pleasure watching you work!");
-                        storage.saveToFile(taskList);
-                        return;
-
+                        storage.saveToFile(tasks);
+                        ui.showExit();
+                        isExit = true;
+                        break;
 
                     case "mark":
                         int markIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                        taskList.updateTaskStatus(markIndex, true);
-                        storage.saveToFile(taskList);
+                        Task markTask = tasks.getTask(markIndex);
+                        markTask.markAsDone();
+                        ui.showTaskMarked(markTask);
+                        storage.saveToFile(tasks);
                         break;
 
                     case "unmark":
                         int unmarkIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                        taskList.updateTaskStatus(unmarkIndex, false);
-                        storage.saveToFile(taskList);
+                        Task unmarkTask = tasks.getTask(unmarkIndex);
+                        unmarkTask.markAsNotDone();
+                        ui.showTaskUnmarked(unmarkTask);
+                        storage.saveToFile(tasks);
                         break;
 
                     case "todo":
-                        String todoDescription = commandArguments[1].trim();
-                        taskList.addToDo(todoDescription);
-                        storage.saveToFile(taskList);
+                        String todoDesc = commandArguments[1];
+                        Task todoTask = new ToDo(todoDesc);
+                        tasks.addTaskToList(todoTask);
+                        ui.showTaskAdded(todoTask, tasks);
+                        storage.saveToFile(tasks);
                         break;
 
                     case "deadline":
-                        String[] parts = commandArguments[1].split(" /by ", 2);
-                        String deadlineDescription = parts[0].trim();
-                        String by = parts[1].trim();
-                        taskList.addDeadline(deadlineDescription, by);
-                        storage.saveToFile(taskList);
+                        String[] deadlineParts = commandArguments[1].split(" /by ");
+                        String deadlineDesc = deadlineParts[0].trim();
+                        String by = deadlineParts[1].trim();
+                        Task deadlineTask = new Deadline(deadlineDesc, by);
+                        tasks.addTaskToList(deadlineTask);
+                        ui.showTaskAdded(deadlineTask, tasks);
+                        storage.saveToFile(tasks);
                         break;
 
                     case "event":
-                        String[] partsFrom = commandArguments[1].split(" /from ", 2);
-                        String description = partsFrom[0].trim();
-                        String[] partsTo = partsFrom[1].split(" /to ", 2);
-                        String from = partsTo[0].trim();
-                        String to = partsTo[1].trim();
-                        taskList.addEvent(description, from, to);
-                        storage.saveToFile(taskList);
+                        String[] eventParts = commandArguments[1].split(" /from | /to ");
+                        String eventDesc = eventParts[0].trim();
+                        String from = eventParts[1].trim();
+                        String to = eventParts[2].trim();
+                        Task eventTask = new Event(eventDesc, from, to);
+                        tasks.addTaskToList(eventTask);
+                        ui.showTaskAdded(eventTask, tasks);
+                        storage.saveToFile(tasks);
                         break;
 
                     case "delete":
-                        int index = Integer.parseInt(commandArguments[1].trim()) - 1;
-                        taskList.deleteTask(index);
-                        storage.saveToFile(taskList);
+                        int delIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                        Task delTask = tasks.getTask(delIndex);
+                        tasks.deleteTask(delIndex);
+                        ui.showDeletedTask(delTask, tasks.size());
+                        storage.saveToFile(tasks);
                         break;
 
-
                     default:
-                        System.out.println("Miffy is too stunned to speak.");
+                        ui.showError("Unknown command. Try again!");
                 }
+
             } catch (Exception e) {
-                System.out.println("Error handling command: " + e.getMessage());
+                ui.showError(e.getMessage());
             }
         }
+
+        scanner.close();
+    }
+
+    public static void main(String[] args) {
+        new Miffy().run();
     }
 }
