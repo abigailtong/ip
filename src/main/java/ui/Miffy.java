@@ -3,11 +3,12 @@ package ui;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import saving.Storage;
 import task.Task;
 import task.Deadline;
 import task.ToDo;
 import task.Event;
-import reader.MiffyReader;
+import reader.Parser;
 
 /**
  * Main class for the ui.Miffy task management program.
@@ -34,7 +35,8 @@ public class Miffy {
     }
 
     public static void handleUserInput(Scanner scanner) {
-        ArrayList<Task> tasks = new ArrayList<Task>();
+        Storage miffySaver = new Storage();
+        ArrayList<Task> tasks = miffySaver.loadFromFile();
         int taskIndex;
         Task task;
         String taskDescription;
@@ -46,7 +48,7 @@ public class Miffy {
 
             String[] commandArguments;
             try {
-                commandArguments = MiffyReader.readInput(input, tasks);
+                commandArguments = Parser.readInput(input, tasks);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 continue;
@@ -55,56 +57,63 @@ public class Miffy {
             String command = commandArguments[0];
 
             switch (command) {
-            case "list":
-                System.out.println("We are checking:");
-                printList(tasks);
-                break;
+                case "list":
+                    System.out.println("We are checking:");
+                    printList(tasks);
+                    break;
 
-            case "bye":
-                System.out.println("As always sir, a great pleasure watching you work!");
-                return;
+                case "bye":
+                    System.out.println("As always sir, a great pleasure watching you work!");
+                    miffySaver.saveToFile(tasks);
+                    return;
 
-            case "mark":
-                taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                task = tasks.get(taskIndex);
-                task.markAsDone();
-                printMarkResult(task, true);
-                break;
+                case "mark":
+                    taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                    task = tasks.get(taskIndex);
+                    task.markAsDone();
+                    printMarkResult(task, true);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
-            case "unmark":
-                taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                task = tasks.get(taskIndex);
-                task.markAsDone();
-                printMarkResult(task, false);
-                break;
+                case "unmark":
+                    taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                    task = tasks.get(taskIndex);
+                    task.markAsDone();
+                    printMarkResult(task, false);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
-            case "todo":
-                taskDescription = commandArguments[1];
-                tasks.add(new ToDo(taskDescription));
-                printInput(tasks);
-                break;
+                case "todo":
+                    taskDescription = commandArguments[1];
+                    tasks.add(new ToDo(taskDescription));
+                    printInput(tasks);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
-            case "deadline":
-                parts = commandArguments[1].split(" /by ");
-                taskDescription = parts[0].trim();
-                String by = parts[1].trim();
-                tasks.add(new Deadline(taskDescription, by));
-                printInput(tasks);
-                break;
+                case "deadline":
+                    parts = commandArguments[1].split(" /by ");
+                    taskDescription = parts[0].trim();
+                    String by = parts[1].trim();
+                    tasks.add(new Deadline(taskDescription, by));
+                    printInput(tasks);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
-            case "event":
-                parts = commandArguments[1].split(" /from | /to ");
-                taskDescription = parts[0].trim();
-                String from = parts[1].trim();
-                String to = parts[2].trim();
-                tasks.add(new Event(taskDescription, from, to));
-                printInput(tasks);
-                break;
+                case "event":
+                    parts = commandArguments[1].split(" /from | /to ");
+                    taskDescription = parts[0].trim();
+                    String from = parts[1].trim();
+                    String to = parts[2].trim();
+                    tasks.add(new Event(taskDescription, from, to));
+                    printInput(tasks);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
-            case "delete":
-                taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                deleteTask(tasks, taskIndex);
-                break;
+                case "delete":
+                    taskIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                    deleteTask(tasks, taskIndex);
+                    miffySaver.saveToFile(tasks);
+                    break;
 
             }
         }

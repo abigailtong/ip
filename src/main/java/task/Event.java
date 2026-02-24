@@ -33,4 +33,9 @@ public class Event extends Task {
         return "[E]" + super.toString()
                 + " (from: " + from + " to: " + to + ")";
     }
+
+    @Override
+    public String toSavingString() {
+        return "E" + " | " + super.toSavingString() + " | " + from + " | " + to;
+    }
 }
