@@ -1,13 +1,10 @@
 package reader;
 
 import exception.MiffyException;
-import task.Task;
-
-import java.util.ArrayList;
+import task.TaskList;
 
 /**
  * Handles parsing and validation of user input.
- * Converts raw input into command arguments usable by Miffy.
  */
 public class Parser {
 
@@ -15,10 +12,11 @@ public class Parser {
      * Parses and validates user input.
      *
      * @param input Raw user input.
+     * @param taskList The current list of tasks for range validation.
      * @return String array of command and arguments.
      * @throws MiffyException if command is invalid.
      */
-    public static String[] readInput(String input, ArrayList<Task> tasks) throws MiffyException {
+    public static String[] readInput(String input, TaskList taskList) throws MiffyException {
 
         if (input == null || input.trim().isEmpty()) {
             throw new MiffyException("I am miffed that you did not say anything!");
@@ -26,124 +24,90 @@ public class Parser {
 
         String[] commandArguments = input.trim().toLowerCase().split(" ", 2);
         String command = commandArguments[0];
-        int taskCount = tasks.size();
-
         int length = commandArguments.length;
-        boolean isInvalid;
 
         switch (command) {
 
             case "bye":
-                if (length != 1) {
-                    throw new MiffyException("Miffy thinks you should type: bye");
-                }
+                validateLength(command, length, 1);
                 return commandArguments;
 
             case "list":
-                if (length != 1) {
-                    throw new MiffyException("Miffy thinks you should type: list");
-                }
-
-                if (taskCount == 0) {
+                validateLength(command, length, 1);
+                if (taskList.size() == 0) {
                     throw new MiffyException("I have no tasks to show you!");
                 }
                 return commandArguments;
 
             case "mark":
-
-                if (length < 2 || commandArguments[1].trim().isEmpty()) {
-                    throw new MiffyException("You did not tell me the task number!");
-                }
-
-                int markIndex;
-                try {
-                    markIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                } catch (NumberFormatException e) {
-                    throw new MiffyException("That is not a valid task number!");
-                }
-
-                // Range validation: 0 < index < taskCount - 1
-                if ((markIndex < 0) || (markIndex > taskCount - 1)) {
-                    throw new MiffyException("Task number is out of valid range!");
-                }
-
-                return commandArguments;
+                int markIndex = parseIndex(commandArguments, taskList.size(), command);
+                return new String[]{command, String.valueOf(markIndex + 1)}; // 1-based index
 
             case "unmark":
-                if (length < 2 || commandArguments[1].trim().isEmpty()) {
-                    throw new MiffyException("You did not tell me the task number!");
-                }
+                int unmarkIndex = parseIndex(commandArguments, taskList.size(), command);
+                return new String[]{command, String.valueOf(unmarkIndex + 1)}; // 1-based index
 
-                int unmarkIndex;
-                try {
-                    unmarkIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                } catch (NumberFormatException e) {
-                    throw new MiffyException("That is not a valid task number!");
-                }
-
-                // Range validation: 0 < index < taskCount - 1
-                if ((unmarkIndex < 0) || (unmarkIndex > taskCount - 1)) {
-                    throw new MiffyException("Task number is out of valid range!");
-                }
-
-                return commandArguments;
+            case "delete":
+                int deleteIndex = parseIndex(commandArguments, taskList.size(), command);
+                return new String[]{command, String.valueOf(deleteIndex + 1)}; // 1-based index
 
             case "todo":
-
-                isInvalid = (length < 2) || commandArguments[1].trim().isEmpty();
-
-                if (isInvalid) {
+                if (length < 2 || commandArguments[1].trim().isEmpty()) {
                     throw new MiffyException("Miffy thinks you should type: todo <description>");
                 }
-
                 return commandArguments;
 
             case "deadline":
-
-                isInvalid = (length < 2)
-                        || !commandArguments[1].contains(" /by ");
-
-                if (isInvalid) {
+                if (length < 2 || !commandArguments[1].contains(" /by ")) {
                     throw new MiffyException(
                             "Miffy thinks you should type: deadline <description> /by <time>");
                 }
-
                 return commandArguments;
 
             case "event":
-
-                isInvalid = (length < 2)
-                        || !commandArguments[1].contains(" /from ")
-                        || !commandArguments[1].contains(" /to ");
-
-                if (isInvalid) {
+                if (length < 2 || !commandArguments[1].contains(" /from ") || !commandArguments[1].contains(" /to ")) {
                     throw new MiffyException(
                             "Miffy thinks you should type: event <description> /from <time> /to <time>");
                 }
-
-                return commandArguments;
-
-            case "delete":
-                if (length < 2 || commandArguments[1].trim().isEmpty()) {
-                    throw new MiffyException("You did not tell me the task number!");
-                }
-
-                int deleteIndex;
-                try {
-                    deleteIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
-                } catch (NumberFormatException e) {
-                    throw new MiffyException("That is not a valid task number!");
-                }
-
-                // Range validation: 0 < index < taskCount - 1
-                if ((deleteIndex < 0) || (deleteIndex > taskCount - 1)) {
-                    throw new MiffyException("Task number is out of valid range!");
-                }
-
                 return commandArguments;
 
             default:
                 throw new MiffyException("Miffy is too stunned to speak.");
         }
+    }
+
+    /** Validates that the command has the exact expected length. */
+    private static void validateLength(String command, int length, int expected) throws MiffyException {
+        if (length != expected) {
+            throw new MiffyException("Miffy thinks you should type: " + command);
+        }
+    }
+
+    /**
+     * Parses a 1-based index from commandArguments and validates its range.
+     *
+     * @param commandArguments The raw command arguments.
+     * @param taskCount Current number of tasks.
+     * @param command Command name (mark/unmark/delete).
+     * @return zero-based index.
+     * @throws MiffyException if invalid number or out of range.
+     */
+    private static int parseIndex(String[] commandArguments, int taskCount, String command) throws MiffyException {
+        if (commandArguments.length < 2 || commandArguments[1].trim().isEmpty()) {
+            throw new MiffyException("You did not tell me the task number!");
+        }
+
+        int index;
+        try {
+            index = Integer.parseInt(commandArguments[1].trim()) - 1;
+        } catch (NumberFormatException e) {
+            throw new MiffyException("That is not a valid task number!");
+        }
+
+        if (index < 0 || index >= taskCount) {
+            throw new MiffyException("Task number is out of valid range!");
+        }
+
+        return index;
     }
 }
