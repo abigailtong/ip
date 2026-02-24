@@ -18,11 +18,6 @@ public class TaskList {
         this.tasks = new ArrayList<>();
     }
 
-    /** Initializes a task list with an existing list of tasks. */
-    public TaskList(List<Task> initialTasks) {
-        this.tasks = new ArrayList<>(initialTasks);
-    }
-
     /** Adds a generic task to the list. */
     public void addTaskToList(Task task) {
         tasks.add(task);

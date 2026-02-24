@@ -54,41 +54,43 @@ public class Miffy {
 
             try {
                 switch (command) {
-                    case "list" -> taskList.printAllTasks();
+                    case "list":
+                        taskList.printAllTasks();
+                        break;
 
-                    case "bye" -> {
+                    case "bye":
                         System.out.println("As always sir, a great pleasure watching you work!");
                         storage.saveToFile(taskList);
                         return;
-                    }
 
-                    case "mark" -> {
-                        int index = Integer.parseInt(commandArguments[1].trim()) - 1;
-                        taskList.updateTaskStatus(index, true);
+
+                    case "mark":
+                        int markIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                        taskList.updateTaskStatus(markIndex, true);
                         storage.saveToFile(taskList);
-                    }
+                        break;
 
-                    case "unmark" -> {
-                        int index = Integer.parseInt(commandArguments[1].trim()) - 1;
-                        taskList.updateTaskStatus(index, false);
+                    case "unmark":
+                        int unmarkIndex = Integer.parseInt(commandArguments[1].trim()) - 1;
+                        taskList.updateTaskStatus(unmarkIndex, false);
                         storage.saveToFile(taskList);
-                    }
+                        break;
 
-                    case "todo" -> {
-                        String description = commandArguments[1].trim();
-                        taskList.addToDo(description);
+                    case "todo":
+                        String todoDescription = commandArguments[1].trim();
+                        taskList.addToDo(todoDescription);
                         storage.saveToFile(taskList);
-                    }
+                        break;
 
-                    case "deadline" -> {
+                    case "deadline":
                         String[] parts = commandArguments[1].split(" /by ", 2);
-                        String description = parts[0].trim();
+                        String deadlineDescription = parts[0].trim();
                         String by = parts[1].trim();
-                        taskList.addDeadline(description, by);
+                        taskList.addDeadline(deadlineDescription, by);
                         storage.saveToFile(taskList);
-                    }
+                        break;
 
-                    case "event" -> {
+                    case "event":
                         String[] partsFrom = commandArguments[1].split(" /from ", 2);
                         String description = partsFrom[0].trim();
                         String[] partsTo = partsFrom[1].split(" /to ", 2);
@@ -96,15 +98,17 @@ public class Miffy {
                         String to = partsTo[1].trim();
                         taskList.addEvent(description, from, to);
                         storage.saveToFile(taskList);
-                    }
+                        break;
 
-                    case "delete" -> {
+                    case "delete":
                         int index = Integer.parseInt(commandArguments[1].trim()) - 1;
                         taskList.deleteTask(index);
                         storage.saveToFile(taskList);
-                    }
+                        break;
 
-                    default -> System.out.println("Miffy is too stunned to speak.");
+
+                    default:
+                        System.out.println("Miffy is too stunned to speak.");
                 }
             } catch (Exception e) {
                 System.out.println("Error handling command: " + e.getMessage());
