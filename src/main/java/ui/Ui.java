@@ -75,4 +75,13 @@ public class Ui {
         }
         System.out.println(HORIZONTAL_LINE);
     }
+
+    public void showFindResults(TaskList foundTasks, String keyword) {
+        System.out.println("Miffy found these tasks containing \"" + keyword + "\":");
+
+        for (int i = 0; i < foundTasks.size(); i++) {
+            System.out.println(" " + (i + 1) + "." + foundTasks.getTask(i));
+        }
+        System.out.println(HORIZONTAL_LINE);
+    }
 }

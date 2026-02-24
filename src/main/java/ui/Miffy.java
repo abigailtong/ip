@@ -38,7 +38,6 @@ public class Miffy {
                 ui.showPrompt();
                 String input = scanner.nextLine();
 
-                // Pass the task list as a List<Task> to Parser
                 String[] commandArguments = Parser.readInput(input, tasks);
                 String command = commandArguments[0];
 
@@ -104,6 +103,17 @@ public class Miffy {
                         tasks.deleteTask(delIndex);
                         ui.showDeletedTask(delTask, tasks.size());
                         storage.saveToFile(tasks);
+                        break;
+
+                    case "find":
+                        String keyword = commandArguments[1].trim();
+                        TaskList foundTasks = tasks.findTasks(keyword);
+
+                        if (foundTasks.size() == 0) {
+                            ui.showError("Miffy could not find any matching tasks!");
+                        } else {
+                            ui.showFindResults(foundTasks, keyword);
+                        }
                         break;
 
                     default:
