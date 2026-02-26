@@ -1,10 +1,10 @@
-package saving;
+package miffy.saving;
 
-import task.Deadline;
-import task.Event;
-import task.Task;
-import task.ToDo;
-import task.TaskList;
+import miffy.task.Deadline;
+import miffy.task.Event;
+import miffy.task.Task;
+import miffy.task.ToDo;
+import miffy.task.TaskList;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,12 +17,10 @@ import java.util.Scanner;
 /**
  * Handles persistent storage for tasks.
  *
- * <p>This class is responsible for:
- * <ul>
- *     <li>Ensuring the storage file exists.</li>
- *     <li>Loading tasks from disk into a TaskList.</li>
- *     <li>Saving tasks from a TaskList to disk.</li>
- * </ul>
+ * This class is responsible for:
+ * Ensuring the storage file exists.
+ * Loading tasks from disk into a TaskList.
+ * Saving tasks from a TaskList to disk.
  */
 public class Storage {
 
@@ -32,13 +30,17 @@ public class Storage {
 
     private final File miffyFile;
 
+    /**
+     * Constructs the Storage object and initializes the storage file.
+     */
     public Storage() {
         this.miffyFile = FILE_PATH.toFile();
         initialiseStorage();
     }
 
     /**
-     * Ensures storage directory and file exist.
+     * Ensures that the storage directory and file exist.
+     * Creates them if they do not exist.
      */
     private void initialiseStorage() {
         try {
@@ -59,7 +61,7 @@ public class Storage {
     /**
      * Loads tasks from storage into a TaskList.
      *
-     * @return TaskList containing parsed tasks.
+     * @return TaskList containing all tasks read from storage
      */
     public TaskList loadFromFile() {
         TaskList taskList = new TaskList();
@@ -84,7 +86,7 @@ public class Storage {
     /**
      * Saves the tasks in a TaskList to storage.
      *
-     * @param taskList TaskList to save.
+     * @param taskList TaskList to save
      */
     public void saveToFile(TaskList taskList) {
         try (FileWriter writer = new FileWriter(miffyFile, false)) {
@@ -97,10 +99,11 @@ public class Storage {
     }
 
     /**
-     * Parses a single line from storage into a Task.
+     * Parses a single line from storage into a Task object.
+     * Supports ToDo, Deadline, and Event tasks.
      *
-     * @param line raw storage line
-     * @return parsed Task or null if invalid
+     * @param line a single line from the storage file
+     * @return Task object if parsing succeeds, null otherwise
      */
     private Task parseTask(String line) {
         String[] parts = line.split("\\s*\\|\\s*");
@@ -123,7 +126,7 @@ public class Storage {
         };
 
         if (task == null) {
-            System.out.println("Miffy found an invalid task line: " + line);
+            System.out.println("Miffy found an invalid miffy.task line: " + line);
             return null;
         }
 

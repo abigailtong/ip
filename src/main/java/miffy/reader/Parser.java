@@ -1,20 +1,22 @@
-package reader;
+package miffy.reader;
 
-import exception.MiffyException;
-import task.TaskList;
+import miffy.exception.MiffyException;
+import miffy.task.TaskList;
 
 /**
- * Handles parsing and validation of user input.
+ * Handles parsing and validation of user input for the Miffy application.
+ * Converts raw user input into validated commands and arguments.
  */
 public class Parser {
 
     /**
-     * Parses and validates user input.
+     * Parses and validates raw user input.
+     * Converts it into a command and its arguments for execution.
      *
-     * @param input Raw user input.
+     * @param input Raw user input string.
      * @param taskList The current list of tasks for range validation.
-     * @return String array of command and arguments.
-     * @throws MiffyException if command is invalid.
+     * @return Array of strings containing the command and its arguments.
+     * @throws MiffyException if the input is invalid or violates command format rules.
      */
     public static String[] readInput(String input, TaskList taskList) throws MiffyException {
 
@@ -82,7 +84,14 @@ public class Parser {
         }
     }
 
-    /** Validates that the command has the exact expected length. */
+    /**
+     * Validates that a command has the exact expected number of arguments.
+     *
+     * @param command The command being validated.
+     * @param length The actual number of arguments.
+     * @param expected The expected number of arguments.
+     * @throws MiffyException if the command does not match the expected length.
+     */
     private static void validateLength(String command, int length, int expected) throws MiffyException {
         if (length != expected) {
             throw new MiffyException("Miffy thinks you should type: " + command);
@@ -90,24 +99,24 @@ public class Parser {
     }
 
     /**
-     * Parses a 1-based index from commandArguments and validates its range.
+     * Parses a 1-based task index from the command arguments and validates it.
      *
-     * @param commandArguments The raw command arguments.
-     * @param taskCount Current number of tasks.
-     * @param command Command name (mark/unmark/delete).
-     * @return zero-based index.
-     * @throws MiffyException if invalid number or out of range.
+     * @param commandArguments Array containing command and arguments.
+     * @param taskCount Total number of tasks currently in the list.
+     * @param command The command name (e.g., mark, unmark, delete).
+     * @return Zero-based index corresponding to the task.
+     * @throws MiffyException if the index is missing, not a number, or out of range.
      */
     private static int parseIndex(String[] commandArguments, int taskCount, String command) throws MiffyException {
         if (commandArguments.length < 2 || commandArguments[1].trim().isEmpty()) {
-            throw new MiffyException("You did not tell me the task number!");
+            throw new MiffyException("You did not tell me the miffy.task number!");
         }
 
         int index;
         try {
             index = Integer.parseInt(commandArguments[1].trim()) - 1;
         } catch (NumberFormatException e) {
-            throw new MiffyException("That is not a valid task number!");
+            throw new MiffyException("That is not a valid miffy.task number!");
         }
 
         if (index < 0 || index >= taskCount) {

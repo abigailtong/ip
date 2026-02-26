@@ -1,4 +1,4 @@
-package exception;
+package miffy.exception;
 
 /**
  * Exception handler for invalid input from the user.

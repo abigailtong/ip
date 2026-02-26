@@ -1,15 +1,21 @@
-package task;
+package miffy.task;
 
 /**
  * Represents a task with a description and completion status.
+ *
+ * This class provides methods to get and set the completion status,
+ * and to return the task as a string for display or for saving to storage.
  */
 public class Task {
 
+    /** Description of the task. */
     private final String description;
+
+    /** Completion status of the task. True if done, false otherwise. */
     private boolean isDone;
 
     /**
-     * Constructs a task with the specified description.
+     * Constructs a Task with the specified description.
      * The task is initially not done.
      *
      * @param description Description of the task.
@@ -52,7 +58,7 @@ public class Task {
     }
 
     /**
-     * Returns the status icon of the task.
+     * Returns the status icon of the task for display.
      *
      * @return "[X]" if the task is done, "[ ]" otherwise.
      */
@@ -61,16 +67,24 @@ public class Task {
     }
 
     /**
-     * Returns the string representation of the task,
-     * including its status and description.
+     * Returns the string representation of the task for display.
      *
-     * @return A string of the status and description.
+     * Includes the status icon and the description.
+     *
+     * @return A string representing the task.
      */
     @Override
     public String toString() {
         return getStatus() + " " + description;
     }
 
+    /**
+     * Returns a string representation of the task for saving to storage.
+     *
+     * Format is: "isDone | description"
+     *
+     * @return A string suitable for saving to persistent storage.
+     */
     public String toSavingString() {
         return isDone + " | " + description;
     }
