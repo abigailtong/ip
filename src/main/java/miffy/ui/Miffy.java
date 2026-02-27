@@ -14,7 +14,7 @@ import java.util.Scanner;
  * Represents the main Miffy application.
  *
  * This class handles user input, coordinates task operations,
- * interacts with storage, and updates the user interface.
+ * interacts with storage, and updates the user interface in the command line.
  */
 public class Miffy {
 
@@ -27,7 +27,7 @@ public class Miffy {
      * Constructs a Miffy application instance.
      *
      * Initializes the user interface, input scanner, storage,
-     * and loads previously saved tasks. Displays a welcome message.
+     * and loads previously saved tasks if present. Displays a welcome message to the user in the form of a Miffy logo.
      */
     public Miffy() {
         this.ui = new Ui();
@@ -43,7 +43,7 @@ public class Miffy {
      *
      * Continuously prompts the user for input, parses commands,
      * executes task operations, updates storage, and handles errors.
-     * The loop ends when the "bye" command is issued.
+     * The loop exits when the "bye" command is issued.
      */
     public void run() {
         boolean isExit = false;
