@@ -8,7 +8,7 @@ Miffy is a schedule manager optimized for the Command Line Interface (CLI). It e
    *Mac users:* Please follow the specific JDK installation guide [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 2. **Download the App:** Grab the latest `.jar` release file from [here](https://github.com/abigailtong/ip/releases).
 3. **Set Up Your Directory:** Move the downloaded file into a dedicated new folder. (Note: Running the app for the first time will automatically generate a `data/WordsOfWisdom.txt` file in this directory to save your tasks).
-4. **Launch Miffy:** Open your terminal, navigate to your new folder, and run the app with the following command: `java -jar <insert release-name>.jar`
+4. **Launch Miffy:** Open your terminal and run the app with the following command: `java -jar <release-name>.jar`
 
 # Features
 
